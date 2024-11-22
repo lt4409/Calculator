@@ -108,7 +108,7 @@
         const screen = document.getElementById('screen');
         const deleteButton = document.querySelector('.delete-button');
         const additionButton = document.querySelector('.add-button');
-        
+
      buttons.forEach(button => {
         button.addEventListener('click', () => {
             if (!button.classList.contains('delete-button')) {
@@ -119,10 +119,9 @@
 
      deleteButton.addEventListener('click', () => {
         screen.innerText = screen.innerText.slice(0, -1);
-
-     additionButton.addEventListener('click', () => {
-        addition(a, b);
      })
+     additionButton.addEventListener('click', () => {
+        addition(a, b); 
     });
  });
 </script>
