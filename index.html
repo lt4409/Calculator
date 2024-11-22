@@ -78,16 +78,23 @@
     </div>
 
 <script>
-    const buttons = document.querySelectorAll('button');
-    const screen = document.getElementById('screen'); 
+    document.addEventListener('DOMContentLoaded', () => {
+        const buttons = document.querySelectorAll('button');
+        const screen = document.getElementById('screen');
+        const deleteButton = document.querySelector('.delete-button');
 
     buttons.forEach(button => {
         button.addEventListener('click', () => {
-            screen.innerText += button.innerText;
+            if (!button.classList.contains('delete-button')) {
+                screen.innerText += button.innerText;
+            }
         });
     });
 
-    const deleteButton = document.getElementsByClassName('delete-button');
+    deleteButton.addEventListener('click', () => {
+        screen.innerText = screen.innerText.slice(0, -1);
+    });
+ });
 </script>
 </body>
 </html>
