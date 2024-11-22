@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calculator</title>
   <style>
-
     body {
         display: flex;
         justify-content: center;
     }
-
     .container {
         width: 200px;
         height: 350px;
@@ -18,17 +16,19 @@
         background-color: lightgrey;
         border-radius: 4%;
     }
-
     .screen {
         display: flex;
+        justify-content: flex-end;
+        align-items: center;
         margin-left: 25px;
         margin-top: 20px;
         width: 150px;
         height: 50px;
         background-color: #55905D;
         border: 2px solid black;
+        font-size: 1.5em;
+        color: white;
     }
-
     .number-container {
         display: flex;
         flex-direction: column;
@@ -38,53 +38,54 @@
         margin-left: 32px;
         border-radius: 4%;
     }
- 
     button { 
         width: 30px;
         height: 30px;
         margin-bottom: 10px;
     }
-
     #equal-button {
         background-color: #B2E7FA;
         border: 1px black solid;
         border-radius: 4%;
     }
-
   </style>
 </head>
 <body>
     <div class="container">
-        <div class="screen"></div>
+        <div class="screen" id="screen"></div> 
         <div class="number-container">
-        <div class="first-row"><button class="left-bracket">(</button>
-        <button class="right-bracket">)</button>
-        <button class="percent">%</button>
-        <button class="delete-button">Del</button></div>
-        <div  class="second-row"><button>7</button>
-        <button class="eight-button">8</button>
-        <button class="nine-button">9</button>
-        <button class="divide-button">/</button></div>
-        <div class="third-row"><button class="four-button">4</button>
-        <button class="five-button">5</button>
-        <button class="six-button">6</button>
-        <button class="multiply-button">x</button></div>
-        <div class="fourth-row"><button>1</button>
-        <button class="two-button">2</button>
-        <button class="three-button">3</button>
-        <button class="add-button">+</button></div> 
-        <div class="fifth-row"><button class="comma-button">,</button>
-        <button class="zero-button">0</button>
-        <button id="equal-button">=</button>
-        <button>-</button></div>
+            <div class="first-row"><button class="left-bracket">(</button>
+            <button class="right-bracket">)</button>
+            <button class="percent">%</button>
+            <button class="delete-button">Del</button></div>
+            <div  class="second-row"><button>7</button>
+            <button>8</button>
+            <button>9</button>
+            <button class="divide-button">/</button></div>
+            <div class="third-row"><button>4</button>
+            <button>5</button>
+            <button>6</button>
+            <button class="multiply-button">x</button></div>
+            <div class="fourth-row"><button>1</button>
+            <button>2</button>
+            <button>3</button>
+            <button class="add-button">+</button></div> 
+            <div class="fifth-row"><button>,</button>
+            <button>0</button>
+            <button id="equal-button">=</button>
+            <button>-</button></div>
         </div>
     </div>
-<script> 
-    const button = document.querySelector('button');
-    const screen = document.getElementById('screen');
 
-    add.addEventListener('click', function(){
-        
-    }) 
+<script>
+    const buttons = document.querySelectorAll('button');
+    const screen = document.getElementById('screen'); 
+
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            screen.innerText += button.innerText;
+        });
+    });
 </script>
 </body>
+</html>
