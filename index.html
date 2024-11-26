@@ -34,7 +34,7 @@
         flex-direction: column;
         width: 132px;
         height: 250px;
-        margin-top: 40px;
+        margin-top: 20px;
         margin-left: 32px;
         border-radius: 4%;
     }
@@ -48,17 +48,22 @@
         border: 1px black solid;
         border-radius: 4%;
     }
+
+    #clear-button {
+        width: 132px;
+    }
   </style>
 </head>
 <body>
     <div class="container">
         <div class="screen" id="screen"></div> 
         <div class="number-container">
+            <button id="clear-button">CLEAR</button>
             <div class="first-row">
                 <button class="left-bracket">(</button>
                 <button class="right-bracket">)</button>
                 <button class="percent">%</button>
-                <button class="operator" id="delete-button">Del</button></div>
+                <button class="operator" id="delete-button">DEL</button></div>
             <div  class="second-row">
                 <button>7</button>
                 <button>8</button>
@@ -83,51 +88,105 @@
     </div>
 
 <script>
-     function addition(a, b) {
+    function addition(a, b) {
         return a + b;
     }
 
-    function subtraction(a, b){
+    function subtraction(a, b) {
         return a - b;
     }
 
-    function multiply (a, b) {
+    function multiply(a, b) {
         return a * b;
     }
 
-    function divide (a, b) {
+    function divide(a, b) {
         return a / b;
     }
 
-    function remainder (a,b) {
-        return a % b;
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
+        let a = ""; 
+        let b = "";
+        let operator = null;
+        let isEnteringB = false;
         const buttons = document.querySelectorAll('button');
         const screen = document.getElementById('screen');
         const deleteButton = document.getElementById('delete-button');
-        const additionButton = document.querySelector('.add-button');
-        const divideButton = document.querySelector('.divide-button');
-        const multiplyButton = document.querySelector('.multiply-button');
-        const subtractButton = document.getElementById('subtract-button');
+        const clearButton = document.getElementById('clear-button')
+        const equalButton = document.getElementById('equal-button');
 
-     buttons.forEach(button => {
-        button.addEventListener('click', () => {
-            if (button.id !== 'delete-button') {
-                screen.innerText += button.innerText;
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const value = button.innerText;
+
+                if (!isNaN(value)) {
+                    if (!isEnteringB) {
+                        a += value;
+                        screen.innerText = a;
+                    } else {
+                        b += value;
+                        screen.innerText = b;
+                    }
+                }
+
+                if (["+", "-", "x", "/"].includes(value)) {
+                    if (a) {
+                        operator = value;
+                        isEnteringB = true;
+                        screen.innerText = ""; 
+                    }
+                }
+            });
+        });
+
+        clearButton.addEventListener('click', () => {
+            screen.innerText = "";
+            a = "";
+            b = "";
+            operator = null;
+            isEnteringB = false;
+
+        })
+
+        deleteButton.addEventListener('click', () => {
+            if (isEnteringB && b) {
+                b = b.slice(0, -1);
+                screen.innerText = b;
+            } else if (!isEnteringB && a) {
+                a = a.slice(0, -1);
+                screen.innerText = a;
             }
         });
-     });
 
-     deleteButton.addEventListener('click', () => {
-        screen.innerText = screen.innerText.slice(0, -1);
-     })
+        equalButton.addEventListener('click', () => {
+            if (a && b && operator) {
+                const num1 = parseFloat(a);
+                const num2 = parseFloat(b);
+                let result;
 
-     additionButton.addEventListener('click', () => {
-        addition(a, b); 
+                switch (operator) {
+                    case "+":
+                        result = addition(num1, num2);
+                        break;
+                    case "-":
+                        result = subtraction(num1, num2);
+                        break;
+                    case "x":
+                        result = multiply(num1, num2);
+                        break;
+                    case "/":
+                        result = divide(num1, num2);
+                        break;
+                }
+
+                screen.innerText = result;
+                a = result.toString();
+                b = "";
+                operator = null; 
+                isEnteringB = false;
+            }
+        });
     });
- });
 </script>
 </body>
 </html>
