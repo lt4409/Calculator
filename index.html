@@ -58,22 +58,22 @@
                 <button class="left-bracket">(</button>
                 <button class="right-bracket">)</button>
                 <button class="percent">%</button>
-                <button class="operator" class="delete-button">Del</button></div>
+                <button class="operator" id="delete-button">Del</button></div>
             <div  class="second-row">
                 <button>7</button>
                 <button>8</button>
                 <button>9</button>
-                <button class="operator" class="divide-button">/</button></div>
+                <button class="operator divide-button">/</button></div>
             <div class="third-row">
                 <button>4</button>
                 <button>5</button>
                 <button>6</button>
-                <button class="operator" class="multiply-button">x</button></div>
+                <button class="operator multiply-button">x</button></div>
             <div class="fourth-row">
                 <button>1</button>
                 <button>2</button>
                 <button>3</button>
-                <button class="operator" class="add-button">+</button></div> 
+                <button class="operator add-button">+</button></div> 
             <div class="fifth-row">
                 <button>,</button>
                 <button>0</button>
@@ -106,12 +106,12 @@
     document.addEventListener('DOMContentLoaded', () => {
         const buttons = document.querySelectorAll('button');
         const screen = document.getElementById('screen');
-        const deleteButton = document.querySelector('.delete-button');
+        const deleteButton = document.getElementById('delete-button');
         const additionButton = document.querySelector('.add-button');
 
      buttons.forEach(button => {
         button.addEventListener('click', () => {
-            if (!button.classList.contains('delete-button')) {
+            if (button.id !== 'delete-button') {
                 screen.innerText += button.innerText;
             }
         });
@@ -120,6 +120,7 @@
      deleteButton.addEventListener('click', () => {
         screen.innerText = screen.innerText.slice(0, -1);
      })
+
      additionButton.addEventListener('click', () => {
         addition(a, b); 
     });
