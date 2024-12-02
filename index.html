@@ -51,10 +51,18 @@
 
     #clear-button {
         width: 132px;
+        font-weight: bold;
+    }
+
+    #delete-button {
+        font-size: 12px;
+        padding-left: 2px;
+        font-weight: bold;
     }
   </style>
 </head>
 <body>
+    <!-- Only one calculator container here -->
     <div class="container">
         <div class="screen" id="screen"></div> 
         <div class="number-container">
@@ -64,7 +72,7 @@
                 <button class="right-bracket">)</button>
                 <button class="percent">%</button>
                 <button class="operator" id="delete-button">DEL</button></div>
-            <div  class="second-row">
+            <div class="second-row">
                 <button>7</button>
                 <button>8</button>
                 <button>9</button>
@@ -86,107 +94,123 @@
                 <button class="operator" id="subtract-button">-</button></div>
         </div>
     </div>
-
 <script>
-    function addition(a, b) {
-        return a + b;
-    }
+    const screen = document.getElementById('screen');
+    const buttons = document.querySelectorAll('button');
+    const equalButton = document.getElementById('equal-button');
+    let expression = "";   // Holds the full expression to calculate
 
-    function subtraction(a, b) {
-        return a - b;
-    }
+    // Adding event listeners to buttons
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            const buttonText = button.innerText;
 
-    function multiply(a, b) {
-        return a * b;
-    }
-
-    function divide(a, b) {
-        return a / b;
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        let a = ""; 
-        let b = "";
-        let operator = null;
-        let isEnteringB = false;
-        const buttons = document.querySelectorAll('button');
-        const screen = document.getElementById('screen');
-        const deleteButton = document.getElementById('delete-button');
-        const clearButton = document.getElementById('clear-button')
-        const equalButton = document.getElementById('equal-button');
-
-        buttons.forEach(button => {
-            button.addEventListener('click', () => {
-                const value = button.innerText;
-
-                if (!isNaN(value)) {
-                    if (!isEnteringB) {
-                        a += value;
-                        screen.innerText = a;
-                    } else {
-                        b += value;
-                        screen.innerText = b;
-                    }
-                }
-
-                if (["+", "-", "x", "/"].includes(value)) {
-                    if (a) {
-                        operator = value;
-                        isEnteringB = true;
-                        screen.innerText = ""; 
-                    }
-                }
-            });
-        });
-
-        clearButton.addEventListener('click', () => {
-            screen.innerText = "";
-            a = "";
-            b = "";
-            operator = null;
-            isEnteringB = false;
-
-        })
-
-        deleteButton.addEventListener('click', () => {
-            if (isEnteringB && b) {
-                b = b.slice(0, -1);
-                screen.innerText = b;
-            } else if (!isEnteringB && a) {
-                a = a.slice(0, -1);
-                screen.innerText = a;
+            if (buttonText === "CLEAR") {
+                expression = ""; // Reset the expression
+            } else if (buttonText === "DEL") {
+                expression = expression.slice(0, -1).trim(); // Remove the last character
+            } else if (["+", "-", "x", "/", "%"].includes(buttonText)) {
+                // Prevent adding consecutive operators or starting with an operator
+                if (!expression || /[+\-x/%]$/.test(expression)) return;
+                expression += ` ${buttonText} `; // Add operator with spacing
+            } else if (buttonText === ",") {
+                expression += "."; // Convert comma to a decimal point
+            } else {
+                // Append numbers
+                expression += buttonText;
             }
-        });
 
-        equalButton.addEventListener('click', () => {
-            if (a && b && operator) {
-                const num1 = parseFloat(a);
-                const num2 = parseFloat(b);
-                let result;
-
-                switch (operator) {
-                    case "+":
-                        result = addition(num1, num2);
-                        break;
-                    case "-":
-                        result = subtraction(num1, num2);
-                        break;
-                    case "x":
-                        result = multiply(num1, num2);
-                        break;
-                    case "/":
-                        result = divide(num1, num2);
-                        break;
-                }
-
-                screen.innerText = result;
-                a = result.toString();
-                b = "";
-                operator = null; 
-                isEnteringB = false;
-            }
+            // Update the display
+            screen.innerText = expression || "0";
         });
     });
+
+    // Calculating the result when '=' button is pressed
+    equalButton.addEventListener('click', () => {
+        try {
+            if (!expression.trim()) {
+                screen.innerText = "0"; // Display 0 for empty input
+                return;
+            }
+
+            const result = calculate(expression);
+            screen.innerText = result;  // Display the result
+            expression = result.toString(); // Use result for further calculations
+        } catch (error) {
+            screen.innerText = "Error"; // Handle calculation errors
+            expression = ""; // Reset expression on error
+        }
+    });
+
+    // Function to perform the calculation
+    function calculate(exp) {
+        // Replace 'x' with '*' for multiplication
+        exp = exp.replace(/x/g, "*");
+
+        // Split the expression into numbers and operators
+        const tokens = exp.match(/(\d+(\.\d*)?|\+|\-|\*|\/|\%|\(|\))/g);
+
+        const numbers = [];
+        const operators = [];
+
+        const precedence = {
+            "+": 1,
+            "-": 1,
+            "*": 2,
+            "/": 2,
+            "%": 2,
+        };
+
+        // Function to apply operators and calculate result
+        const applyOperator = () => {
+            const b = numbers.pop();
+            const a = numbers.pop();
+            const operator = operators.pop();
+
+            switch (operator) {
+                case "+": numbers.push(a + b); break;
+                case "-": numbers.push(a - b); break;
+                case "*": numbers.push(a * b); break;
+                case "/":
+                    if (b === 0) throw new Error("Division by zero");
+                    numbers.push(a / b);
+                    break;
+                case "%": numbers.push(a % b); break;
+            }
+        };
+
+        // Loop through each token and process
+        tokens.forEach(token => {
+            if (!isNaN(token)) {
+                numbers.push(parseFloat(token)); // Push valid number
+            } else if (token in precedence) {
+                // Apply operators with higher or equal precedence
+                while (
+                    operators.length &&
+                    precedence[operators[operators.length - 1]] >= precedence[token]
+                ) {
+                    applyOperator();
+                }
+                operators.push(token); // Push current operator
+            } else if (token === "(") {
+                operators.push(token); // Push opening bracket to stack
+            } else if (token === ")") {
+                // Resolve until matching opening bracket
+                while (operators.length && operators[operators.length - 1] !== "(") {
+                    applyOperator();
+                }
+                operators.pop(); // Pop opening bracket
+            }
+        });
+
+        // Apply any remaining operators
+        while (operators.length) {
+            applyOperator(); // Apply remaining operators
+        }
+
+        return numbers[0]; // Final result
+    }
 </script>
+
 </body>
 </html>
